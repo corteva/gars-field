@@ -1,0 +1,7 @@
+exclude .gitignore
+include *.rst
+include setup.cfg
+prune .cache
+prune .git
+prune build
+prune dist
