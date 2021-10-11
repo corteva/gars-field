@@ -1,0 +1,26 @@
+repos:
+    -   repo: https://github.com/pre-commit/pre-commit-hooks
+        rev: v4.0.1
+        hooks:
+        -   id: check-yaml
+            exclude: .*serverless.*\.yml
+        -   id: end-of-file-fixer
+        -   id: trailing-whitespace
+    -   repo: https://github.com/psf/black
+        rev: 21.7b0
+        hooks:
+        -   id: black
+    -   repo: https://github.com/timothycrosley/isort
+        rev: 5.9.3
+        hooks:
+        -   id: isort
+            args: [setup.py, gars_field/, test/]
+    -   repo: https://github.com/asottile/blacken-docs
+        rev: v1.10.0
+        hooks:
+        -   id: blacken-docs
+            args: [--skip-errors]
+    -   repo: https://gitlab.com/pycqa/flake8
+        rev: 3.9.2
+        hooks:
+        -   id: flake8
