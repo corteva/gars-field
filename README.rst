@@ -8,10 +8,10 @@ gars-field
 
 .. image:: https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square
     :alt: All Contributors
-    :target: https://github.com/corteva/gars-field/blob/master/AUTHORS.rst
+    :target: https://github.com/corteva/gars-field/blob/main/AUTHORS.rst
 
 .. image:: https://img.shields.io/badge/License-BSD%203--Clause-yellow.svg
-    :target: https://github.com/corteva/gars-field/blob/master/LICENSE
+    :target: https://github.com/corteva/gars-field/blob/main/LICENSE
 
 .. image:: https://img.shields.io/pypi/v/gars_field.svg
     :target: https://pypi.python.org/pypi/gars_field
@@ -25,7 +25,7 @@ gars-field
 .. image:: https://github.com/corteva/gars-field/workflows/Tests/badge.svg
     :target: https://github.com/corteva/gars-field/actions?query=workflow%3ATests
 
-.. image:: https://codecov.io/gh/corteva/gars-field/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/corteva/gars-field/branch/main/graph/badge.svg
     :target: https://codecov.io/gh/corteva/gars-field
 
 .. image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
