@@ -109,7 +109,8 @@ class GARSField:
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_60deg += GARSField(bounding_geom).gars_60deg
             # make sure unique
-            return sorted(set(self._gars_60deg))
+            self._gars_60deg = sorted(set(self._gars_60deg))
+            return self._gars_60deg
 
         # generate the list of 36 degree GED-GARS grids
         self._gars_60deg = []
@@ -134,7 +135,8 @@ class GARSField:
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_30deg += GARSField(bounding_geom).gars_30deg
             # make sure unique
-            return sorted(set(self._gars_30deg))
+            self._gars_30deg = sorted(set(self._gars_30deg))
+            return self._gars_30deg
 
         # generate the list of 3 degree ED-GARS grids
         self._gars_30deg = []
@@ -178,7 +180,8 @@ class GARSField:
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_6deg += GARSField(bounding_geom).gars_6deg
             # make sure unique
-            return sorted(set(self._gars_6deg))
+            self._gars_6deg = sorted(set(self._gars_6deg))
+            return self._gars_6deg
 
         # generate the list of 6 degree ED-GARS grids
         self._gars_6deg = []
@@ -206,7 +209,8 @@ class GARSField:
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_3deg += GARSField(bounding_geom).gars_3deg
             # make sure unique
-            return sorted(set(self._gars_3deg))
+            self._gars_3deg = sorted(set(self._gars_3deg))
+            return self._gars_3deg
 
         # generate the list of 3 degree ED-GARS grids
         self._gars_3deg = []
@@ -228,7 +232,8 @@ class GARSField:
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_1deg += GARSField(bounding_geom).gars_1deg
             # make sure unique
-            return sorted(set(self._gars_1deg))
+            self._gars_1deg = sorted(set(self._gars_1deg))
+            return self._gars_1deg
 
         # generate the list of 1 degree ED-GARS grids
         self._gars_1deg = []
@@ -270,7 +275,8 @@ class GARSField:
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_30min += GARSField(bounding_geom).gars_30min
             # make sure unique
-            return sorted(set(self._gars_30min))
+            self._gars_30min = sorted(set(self._gars_30min))
+            return self._gars_30min
 
         # generate the list of 30 minute GARS grids
         self._gars_30min = []
@@ -298,7 +304,8 @@ class GARSField:
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_15min += GARSField(bounding_geom).gars_15min
             # make sure unique
-            return sorted(set(self._gars_15min))
+            self._gars_15min = sorted(set(self._gars_15min))
+            return self._gars_15min
 
         # generate the list of 15 minute GARS grids
         self._gars_15min = []
@@ -322,7 +329,8 @@ class GARSField:
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_5min += GARSField(bounding_geom).gars_5min
             # make sure unique
-            return sorted(set(self._gars_5min))
+            self._gars_5min = sorted(set(self._gars_5min))
+            return self._gars_5min
 
         # generate the list of 5 minute GARS grids
         self._gars_5min = []
@@ -346,7 +354,8 @@ class GARSField:
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_1min += GARSField(bounding_geom).gars_1min
             # make sure unique
-            return sorted(set(self._gars_1min))
+            self._gars_1min = sorted(set(self._gars_1min))
+            return self._gars_1min
 
         # generate the list of 1 minute GARS grids
         self._gars_1min = []

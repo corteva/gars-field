@@ -33,6 +33,12 @@ def box_latlon(minx, miny, maxx, maxy):
     return shapely.geometry.box(minx, miny, maxx, maxy)
 
 
+def assert_gars_expected(field: GARSField, resolution, expected):
+    for _ in range(2):
+        # repeat to ensure cached geometry is the same
+        assert [str(gg) for gg in getattr(field, f"gars_{resolution}")] == expected
+
+
 MULTI_POLY = shapely.wkt.loads(
     "MULTIPOLYGON (((-179.9999999 -81.96439234540721, "
     "-179.4398378760588 -81.96439234540721, "
@@ -75,7 +81,7 @@ MULTI_POLY_DUPLICATE = shapely.wkt.loads(
 )
 def test_gars_field__gars_60deg(geom_bounds, expected):
     garsf = GARSField(geom_bounds)
-    assert [str(gg) for gg in garsf.gars_60deg] == expected
+    assert_gars_expected(garsf, "60deg", expected)
 
 
 @pytest.mark.parametrize(
@@ -87,7 +93,7 @@ def test_gars_field__gars_60deg(geom_bounds, expected):
 )
 def test_gars_field__gars_60deg_multipoly(multi_poly, expected):
     garsf = GARSField(multi_poly)
-    assert [str(gg) for gg in garsf.gars_60deg] == expected
+    assert_gars_expected(garsf, "60deg", expected)
 
 
 @pytest.mark.parametrize(
@@ -111,7 +117,7 @@ def test_gars_field__gars_60deg_multipoly(multi_poly, expected):
 )
 def test_gars_field__gars_30deg(geom_bounds, expected):
     garsf = GARSField(geom_bounds)
-    assert [str(gg) for gg in garsf.gars_30deg] == expected
+    assert_gars_expected(garsf, "30deg", expected)
 
 
 @pytest.mark.parametrize(
@@ -123,13 +129,15 @@ def test_gars_field__gars_30deg(geom_bounds, expected):
 )
 def test_gars_field__gars_30deg_multipoly(multi_poly, expected):
     garsf = GARSField(multi_poly)
-    assert [str(gg) for gg in garsf.gars_30deg] == expected
+    assert_gars_expected(garsf, "30deg", expected)
 
 
 def test_gars_field_gars_30deg__check_all_4():
     gars5 = GARSField(GEDGARSGrid("GD1A").polygon.buffer(-0.0001))
-    assert len(gars5.gars_60deg) == 1
-    assert len(gars5.gars_30deg) == 4
+    for _ in range(2):
+        # repeat to ensure cached geometry is the same
+        assert len(gars5.gars_60deg) == 1
+        assert len(gars5.gars_30deg) == 4
 
 
 @pytest.mark.parametrize(
@@ -153,7 +161,7 @@ def test_gars_field_gars_30deg__check_all_4():
 )
 def test_gars_field__gars_6deg(geom_bounds, expected):
     garsf = GARSField(geom_bounds)
-    assert [str(gg) for gg in garsf.gars_6deg] == expected
+    assert_gars_expected(garsf, "6deg", expected)
 
 
 @pytest.mark.parametrize(
@@ -165,7 +173,7 @@ def test_gars_field__gars_6deg(geom_bounds, expected):
 )
 def test_gars_field__gars_6deg_multipoly(multi_poly, expected):
     garsf = GARSField(multi_poly)
-    assert [str(gg) for gg in garsf.gars_6deg] == expected
+    assert_gars_expected(garsf, "6deg", expected)
 
 
 @pytest.mark.parametrize(
@@ -189,7 +197,7 @@ def test_gars_field__gars_6deg_multipoly(multi_poly, expected):
 )
 def test_gars_field__gars_3deg(geom_bounds, expected):
     garsf = GARSField(geom_bounds)
-    assert [str(gg) for gg in garsf.gars_3deg] == expected
+    assert_gars_expected(garsf, "3deg", expected)
 
 
 @pytest.mark.parametrize(
@@ -201,7 +209,7 @@ def test_gars_field__gars_3deg(geom_bounds, expected):
 )
 def test_gars_field__gars_3deg_multipoly(multi_poly, expected):
     garsf = GARSField(multi_poly)
-    assert [str(gg) for gg in garsf.gars_3deg] == expected
+    assert_gars_expected(garsf, "3deg", expected)
 
 
 @pytest.mark.parametrize(
@@ -253,7 +261,7 @@ def test_gars_field__gars_3deg_multipoly(multi_poly, expected):
 )
 def test_gars_field__gars_1deg(geom_bounds, expected):
     garsf = GARSField(geom_bounds)
-    assert [str(gg) for gg in garsf.gars_1deg] == expected
+    assert_gars_expected(garsf, "1deg", expected)
 
 
 @pytest.mark.parametrize(
@@ -275,7 +283,7 @@ def test_gars_field__gars_1deg(geom_bounds, expected):
 )
 def test_gars_field__gars_1deg_multipoly(multi_poly, expected):
     garsf = GARSField(multi_poly)
-    assert [str(gg) for gg in garsf.gars_1deg] == expected
+    assert_gars_expected(garsf, "1deg", expected)
 
 
 @pytest.mark.parametrize(
@@ -406,7 +414,7 @@ def test_gars_field__gars_1deg_multipoly(multi_poly, expected):
 )
 def test_gars_field__gars_30min(geom_bounds, expected):
     garsf = GARSField(geom_bounds)
-    assert [str(gg) for gg in garsf.gars_30min] == expected
+    assert_gars_expected(garsf, "30min", expected)
 
 
 @pytest.mark.parametrize(
@@ -446,7 +454,7 @@ def test_gars_field__gars_30min(geom_bounds, expected):
 )
 def test_gars_field__gars_30min_multipoly(multi_poly, expected):
     garsf = GARSField(multi_poly)
-    assert [str(gg) for gg in garsf.gars_30min] == expected
+    assert_gars_expected(garsf, "30min", expected)
 
 
 @pytest.mark.parametrize(
@@ -556,7 +564,7 @@ def test_gars_field__gars_30min_multipoly(multi_poly, expected):
 )
 def test_gars_field__gars_15min(geom_bounds, expected):
     garsf = GARSField(geom_bounds)
-    assert [str(gg) for gg in garsf.gars_15min] == expected
+    assert_gars_expected(garsf, "15min", expected)
 
 
 @pytest.mark.parametrize(
@@ -618,7 +626,7 @@ def test_gars_field__gars_15min(geom_bounds, expected):
 )
 def test_gars_field__gars_15min_multipoly(multi_poly, expected):
     garsf = GARSField(multi_poly)
-    assert [str(gg) for gg in garsf.gars_15min] == expected
+    assert_gars_expected(garsf, "15min", expected)
 
 
 @pytest.mark.parametrize(
@@ -737,7 +745,7 @@ def test_gars_field__gars_15min_multipoly(multi_poly, expected):
 )
 def test_gars_field__gars_5min(geom_bounds, expected):
     garsf = GARSField(geom_bounds)
-    assert [str(gg) for gg in garsf.gars_5min] == expected
+    assert_gars_expected(garsf, "5min", expected)
 
 
 @pytest.mark.parametrize(
@@ -967,7 +975,7 @@ def test_gars_field__gars_5min(geom_bounds, expected):
 )
 def test_gars_field__gars_5min_multipoly(multi_poly, expected):
     garsf = GARSField(multi_poly)
-    assert [str(gg) for gg in garsf.gars_5min] == expected
+    assert_gars_expected(garsf, "5min", expected)
 
 
 @pytest.mark.parametrize(
@@ -985,13 +993,15 @@ def test_gars_field__gars_5min_multipoly(multi_poly, expected):
 )
 def test_gars_field__gars_1min(geom_bounds, expected):
     garsf = GARSField(geom_bounds)
-    assert [str(gg) for gg in garsf.gars_1min] == expected
+    assert_gars_expected(garsf, "1min", expected)
 
 
 def test_gars_field_gars_1min__check_all_25():
     gars5 = GARSField(GARSGrid("173MA47").polygon.buffer(-0.0001))
-    assert len(gars5.gars_5min) == 1
-    assert len(gars5.gars_1min) == 25
+    for _ in range(2):
+        # repeat to check cache is the same
+        assert len(gars5.gars_5min) == 1
+        assert len(gars5.gars_1min) == 25
 
 
 @pytest.mark.parametrize(
@@ -1000,7 +1010,7 @@ def test_gars_field_gars_1min__check_all_25():
 )
 def test_gars_field__gars_1min_multipoly(multi_poly):
     garsf = GARSField(multi_poly.buffer(-0.28))
-    assert [str(gg) for gg in garsf.gars_1min] == [
+    expected = [
         "001AQ2102",
         "001AQ2107",
         "001AQ2112",
@@ -1034,17 +1044,20 @@ def test_gars_field__gars_1min_multipoly(multi_poly):
         "001AR4717",
         "001AR4722",
     ]
+    assert_gars_expected(garsf, "1min", expected)
 
 
 def test_gars_1min_exists_for_point():
     story = shapely.geometry.Point(-93.729739032219, 42.01131578)
     garsf = GARSField(story)
-    assert len(garsf.gars_1min) == 1
-    assert str(garsf.gars_1min[0]) == "173MA4722"
-    assert str(garsf.gars_1min[0].polygon) == (
-        "POLYGON ((-93.71666666666667 42,"
-        " -93.71666666666667 42.01666666666667,"
-        " -93.73333333333333 42.01666666666667,"
-        " -93.73333333333333 42,"
-        " -93.71666666666667 42))"
-    )
+    for _ in range(2):
+        # repeat to check cache is the same
+        assert len(garsf.gars_1min) == 1
+        assert str(garsf.gars_1min[0]) == "173MA4722"
+        assert str(garsf.gars_1min[0].polygon) == (
+            "POLYGON ((-93.71666666666667 42,"
+            " -93.71666666666667 42.01666666666667,"
+            " -93.73333333333333 42.01666666666667,"
+            " -93.73333333333333 42,"
+            " -93.71666666666667 42))"
+        )
