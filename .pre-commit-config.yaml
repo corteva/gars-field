@@ -1,22 +1,22 @@
 repos:
     -   repo: https://github.com/pre-commit/pre-commit-hooks
-        rev: v4.0.1
+        rev: v4.1.0
         hooks:
         -   id: check-yaml
             exclude: .*serverless.*\.yml
         -   id: end-of-file-fixer
         -   id: trailing-whitespace
     -   repo: https://github.com/psf/black
-        rev: 21.9b0
+        rev: 22.3.0
         hooks:
         -   id: black
     -   repo: https://github.com/timothycrosley/isort
-        rev: 5.9.3
+        rev: 5.10.1
         hooks:
         -   id: isort
             args: [setup.py, gars_field/, test/]
     -   repo: https://github.com/asottile/blacken-docs
-        rev: v1.11.0
+        rev: v1.12.1
         hooks:
         -   id: blacken-docs
             args: [--skip-errors]
