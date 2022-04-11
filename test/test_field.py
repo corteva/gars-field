@@ -1054,10 +1054,13 @@ def test_gars_1min_exists_for_point():
         # repeat to check cache is the same
         assert len(garsf.gars_1min) == 1
         assert str(garsf.gars_1min[0]) == "173MA4722"
-        assert str(garsf.gars_1min[0].polygon) == (
-            "POLYGON ((-93.71666666666667 42,"
-            " -93.71666666666667 42.01666666666667,"
-            " -93.73333333333333 42.01666666666667,"
-            " -93.73333333333333 42,"
-            " -93.71666666666667 42))"
+        assert garsf.gars_1min[0].polygon.equals_exact(
+            shapely.wkt.loads(
+                "POLYGON ((-93.71666666666667 42,"
+                " -93.71666666666667 42.01666666666667,"
+                " -93.73333333333333 42.01666666666667,"
+                " -93.73333333333333 42,"
+                " -93.71666666666667 42))"
+            ),
+            tolerance=0.5 * 10**-12,
         )

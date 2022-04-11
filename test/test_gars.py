@@ -1,4 +1,5 @@
 import pytest
+import shapely.wkt
 
 from gars_field import GARSGrid
 
@@ -67,7 +68,9 @@ def test_gars_from_latlon(lat, lon, resolution, expected_id):
     ],
 )
 def test_gars_polygon(gars_id, expected_polygon):
-    assert str(GARSGrid(gars_id).polygon) == expected_polygon
+    assert GARSGrid(gars_id).polygon.equals_exact(
+        shapely.wkt.loads(expected_polygon), tolerance=0.5 * 10**-12
+    )
 
 
 @pytest.mark.parametrize(
