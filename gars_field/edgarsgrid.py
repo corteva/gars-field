@@ -62,6 +62,7 @@ The seventh character is the keypad key number. (ex. D06AG39)
 """
 import math
 import re
+from typing import Optional
 
 import shapely.geometry
 
@@ -84,7 +85,7 @@ class EDGARSGrid(GARSGridBase):
         r"(?P<quadrant_1deg>[1-9])?)?$"
     )
 
-    def __init__(self, gars_id, max_resolution=None):
+    def __init__(self, gars_id: str, max_resolution: Optional[int] = None) -> None:
         """
         Parameters
         ----------
@@ -111,13 +112,13 @@ class EDGARSGrid(GARSGridBase):
         gars_match = self.RE_PATTERN.match(gars_id)
         if not gars_match:
             raise ValueError(f'"{gars_id}" is not a valid ED-GARS grid ID.')
-        self.gars_id = gars_id
+        self.gars_id: str = gars_id
 
         gars_dict = gars_match.groupdict()
 
-        self.quadrant_1deg = gars_dict["quadrant_1deg"]
-        self.quadrant_3deg = gars_dict["quadrant_3deg"]
-        self.quadrant_6deg = gars_dict["quadrant_6deg"]
+        self.quadrant_1deg: str = gars_dict["quadrant_1deg"]
+        self.quadrant_3deg: str = gars_dict["quadrant_3deg"]
+        self.quadrant_6deg: str = gars_dict["quadrant_6deg"]
 
         lon_num = int(self.quadrant_6deg[:2])
         if (lon_num < 1) or (lon_num > 60):
@@ -133,20 +134,22 @@ class EDGARSGrid(GARSGridBase):
             )
 
         # determine resolution from ED-GARS ID
-        self.resolution = 6
+        self.resolution: int = 6
         if self.quadrant_1deg:
             self.resolution = 1
         elif self.quadrant_3deg:
             self.resolution = 3
 
         # properties
-        self._polygon = None
+        self._polygon: Optional[shapely.geometry.Polygon] = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<ED-GARS(gars_id={self}, resolution={self.resolution})>"
 
     @classmethod
-    def from_latlon(cls, latitude, longitude, resolution):
+    def from_latlon(
+        cls, latitude: float, longitude: float, resolution: int
+    ) -> "EDGARSGrid":
         """Load ED-GARS grid from latitude and longitude.
 
         Parameters
@@ -186,20 +189,20 @@ class EDGARSGrid(GARSGridBase):
         if resolution < 6:
             lon_3deg_idx = math.floor((longitude % 6) / 3.0) + 1
             lat_3deg_idx = 2 - math.floor((latitude % 6) / 3.0)
-            quadrant_3deg = int((lat_3deg_idx - 1) * 2 + lon_3deg_idx)
+            quadrant_3deg = str(int((lat_3deg_idx - 1) * 2 + lon_3deg_idx))
 
             # 1 deg quadrant
             if resolution < 3:
                 lon_1deg_idx = math.floor(longitude % 3) + 1
                 lat_1deg_idx = 3 - math.floor(latitude % 3)
-                quadrant_1deg = int((lat_1deg_idx - 1) * 3 + lon_1deg_idx)
+                quadrant_1deg = str(int((lat_1deg_idx - 1) * 3 + lon_1deg_idx))
 
-        gars_id = "".join(["D", quadrant_6deg, str(quadrant_3deg), str(quadrant_1deg)])
+        gars_id = "".join(["D", quadrant_6deg, quadrant_3deg, quadrant_1deg])
 
         return cls(gars_id, max_resolution=resolution)
 
     @property
-    def polygon(self):
+    def polygon(self) -> shapely.geometry.Polygon:
         """Generates the GARS bounding polygon.
 
         Returns
@@ -212,7 +215,7 @@ class EDGARSGrid(GARSGridBase):
 
         # CALCULATE 6 DEG DEGREES
         # get 6 DEG quadrant info
-        longitude = ((int(self.quadrant_6deg[:2]) - 1) * 6) - 180
+        longitude: float = ((int(self.quadrant_6deg[:2]) - 1) * 6) - 180
 
         # first 6 deg north/south letter, A-B
         lat_6deg_letter1 = self.quadrant_6deg[2]
@@ -220,7 +223,7 @@ class EDGARSGrid(GARSGridBase):
         # second 6 deg north/south letter, A-V
         lat_6deg_letter2 = self.quadrant_6deg[3]
 
-        latitude = (-90.0 + (self.LETTERS.index(lat_6deg_letter1) * 120.0)) + (
+        latitude: float = (-90.0 + (self.LETTERS.index(lat_6deg_letter1) * 120.0)) + (
             self.LETTERS.index(lat_6deg_letter2) * 6.0
         )
 

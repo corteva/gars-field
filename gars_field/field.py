@@ -6,9 +6,12 @@ This module contains tools to generate
 
 """
 import itertools
+from typing import List, Optional, Tuple, Type
+
+import shapely
 
 from .edgarsgrid import EDGARSGrid
-from .garsgrid import GARSGrid
+from .garsgrid import GARSGrid, GARSGridBase
 from .gedgarsgrid import GEDGARSGrid
 
 
@@ -19,7 +22,7 @@ class GARSField:
     """
 
     # pylint: disable=too-many-instance-attributes
-    def __init__(self, bounding_geom):
+    def __init__(self, bounding_geom: shapely.geometry.base.BaseGeometry) -> None:
         """
         Parameters
         ----------
@@ -29,19 +32,19 @@ class GARSField:
         """
         self.bounding_geom = bounding_geom
 
-        self._gars_60deg = None
-        self._gars_30deg = None
+        self._gars_60deg: Optional[List[GEDGARSGrid]] = None
+        self._gars_30deg: Optional[List[GEDGARSGrid]] = None
 
-        self._gars_6deg = None
-        self._gars_3deg = None
-        self._gars_1deg = None
+        self._gars_6deg: Optional[List[EDGARSGrid]] = None
+        self._gars_3deg: Optional[List[EDGARSGrid]] = None
+        self._gars_1deg: Optional[List[EDGARSGrid]] = None
 
-        self._gars_30min = None
-        self._gars_15min = None
-        self._gars_5min = None
-        self._gars_1min = None
+        self._gars_30min: Optional[List[GARSGrid]] = None
+        self._gars_15min: Optional[List[GARSGrid]] = None
+        self._gars_5min: Optional[List[GARSGrid]] = None
+        self._gars_1min: Optional[List[GARSGrid]] = None
 
-    def _get_bounds(self):
+    def _get_bounds(self) -> Tuple[float, float, float, float]:
         """
         Retrieve the bounding coordinates of the input geometry
 
@@ -60,34 +63,42 @@ class GARSField:
         return min_lon, min_lat, max_lon, max_lat
 
     @staticmethod
-    def _get_lat_letter_range(gars_grid, ll_lat1, ll_lat2, ur_lat1, ur_lat2):
+    def _get_lat_letter_range(
+        gars_grid: Type[GARSGridBase],
+        ll_lat1: str,
+        ll_lat2: str,
+        ur_lat1: str,
+        ur_lat2: str,
+    ) -> List[str]:
         """
         Retrieve the latitude letter range for the bounding box.
         """
+        # ignoring types due to: https://github.com/python/mypy/issues/4125
+
         # first north/south letter,  GARSGrid (A-Q), EDGARSGRid (A-B)
-        lat_letter1_range = gars_grid.LETTERS[
-            gars_grid.LETTERS.index(ll_lat1) : gars_grid.LETTERS.index(ur_lat1) + 1
+        lat_letter1_range: str = gars_grid.LETTERS[  # type: ignore
+            gars_grid.LETTERS.index(ll_lat1) : gars_grid.LETTERS.index(ur_lat1) + 1  # type: ignore
         ]
 
         # second north/south letter, A-Z
-        lat_letter2_range = gars_grid.LETTERS[
-            gars_grid.LETTERS.index(ll_lat2) : gars_grid.LETTERS.index(ur_lat2) + 1
+        lat_letter2_range: str = gars_grid.LETTERS[  # type: ignore
+            gars_grid.LETTERS.index(ll_lat2) : gars_grid.LETTERS.index(ur_lat2) + 1  # type: ignore
         ]
 
-        lat_letter_range = []
+        lat_letter_range: List[str] = []
         if ll_lat1 != ur_lat1:
             # part 1: using first letter1 and all from first letter2 to end of all LETTERS
-            for letter2 in gars_grid.LETTERS[gars_grid.LETTERS.index(ll_lat2) :]:
+            for letter2 in gars_grid.LETTERS[gars_grid.LETTERS.index(ll_lat2) :]:  # type: ignore
                 lat_letter_range.append("".join([ll_lat1, letter2]))
 
             # part 2: from second letter1 to next to last letter2 with all LETTERS
             for letter1, letter2 in itertools.product(
-                lat_letter1_range[1:-1], gars_grid.LETTERS
+                lat_letter1_range[1:-1], gars_grid.LETTERS  # type: ignore
             ):
                 lat_letter_range.append("".join([letter1, letter2]))
 
             # part 3: using last letter1 and all from beginning of all LETTERS to last last letter2
-            for letter2 in gars_grid.LETTERS[: gars_grid.LETTERS.index(ur_lat2) + 1]:
+            for letter2 in gars_grid.LETTERS[: gars_grid.LETTERS.index(ur_lat2) + 1]:  # type: ignore
                 lat_letter_range.append("".join([ur_lat1, letter2]))
 
         else:
@@ -98,7 +109,7 @@ class GARSField:
         return lat_letter_range
 
     @property
-    def gars_60deg(self):
+    def gars_60deg(self) -> List[GEDGARSGrid]:
         """list: The 36deg GEDGARSGrid objects that intersect the bounding geometry."""
         if self._gars_60deg is not None:
             return self._gars_60deg
@@ -124,7 +135,7 @@ class GARSField:
         return self._gars_60deg
 
     @property
-    def gars_30deg(self):
+    def gars_30deg(self) -> List[GEDGARSGrid]:
         """list: The 30deg GEDGARSGrid objects that intersect the bounding geometry."""
         if self._gars_30deg is not None:
             return self._gars_30deg
@@ -148,7 +159,7 @@ class GARSField:
                 self._gars_30deg.append(g30deg)
         return self._gars_30deg
 
-    def _get_6deg_ranges(self):
+    def _get_6deg_ranges(self) -> Tuple[List[str], List[str]]:
         """Retrieves the latitude numeric range and longitude letter range
         within the bounds.
         """
@@ -169,7 +180,7 @@ class GARSField:
         return lon_num_range, lat_letter_range
 
     @property
-    def gars_6deg(self):
+    def gars_6deg(self) -> List[EDGARSGrid]:
         """list: The 6deg EDGARSGrid objects that intersect the bounding geometry."""
         if self._gars_6deg is not None:
             return self._gars_6deg
@@ -198,7 +209,7 @@ class GARSField:
         return self._gars_6deg
 
     @property
-    def gars_3deg(self):
+    def gars_3deg(self) -> List[EDGARSGrid]:
         """list: The 3deg EDGARSGrid objects that intersect the bounding geometry."""
         if self._gars_3deg is not None:
             return self._gars_3deg
@@ -221,7 +232,7 @@ class GARSField:
         return self._gars_3deg
 
     @property
-    def gars_1deg(self):
+    def gars_1deg(self) -> List[EDGARSGrid]:
         """list: The 1deg EDGARSGrid objects that intersect the bounding geometry."""
         if self._gars_1deg is not None:
             return self._gars_1deg
@@ -243,7 +254,7 @@ class GARSField:
                 self._gars_1deg.append(g1deg)
         return self._gars_1deg
 
-    def _get_30min_ranges(self):
+    def _get_30min_ranges(self) -> Tuple[List[str], List[str]]:
         """Retrieves the latitude numeric range and longitude letter range
         within the bounds.
         """
@@ -264,7 +275,7 @@ class GARSField:
         return lon_num_range, lat_letter_range
 
     @property
-    def gars_30min(self):
+    def gars_30min(self) -> List[GARSGrid]:
         """list: The 30min GARSGrid objects that intersect the bounding geometry."""
         if self._gars_30min is not None:
             return self._gars_30min
@@ -293,7 +304,7 @@ class GARSField:
         return self._gars_30min
 
     @property
-    def gars_15min(self):
+    def gars_15min(self) -> List[GARSGrid]:
         """list: The 15min GARSGrid objects that intersect the bounding geometry."""
         if self._gars_15min is not None:
             return self._gars_15min
@@ -318,7 +329,7 @@ class GARSField:
         return self._gars_15min
 
     @property
-    def gars_5min(self):
+    def gars_5min(self) -> List[GARSGrid]:
         """list: The 5min GARSGrid objects that intersect the bounding geometry."""
         if self._gars_5min is not None:
             return self._gars_5min
@@ -343,7 +354,7 @@ class GARSField:
         return self._gars_5min
 
     @property
-    def gars_1min(self):
+    def gars_1min(self) -> List[GARSGrid]:
         """list: The 1min GARSGrid objects that intersect the bounding geometry."""
         if self._gars_1min is not None:
             return self._gars_1min
