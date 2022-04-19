@@ -86,10 +86,13 @@ The eighth and ninth characters are the keypad key number. (ex.006AG3901)
 import math
 import re
 from abc import abstractmethod
+from typing import Optional, Tuple
 
 import shapely.geometry
 from pyproj.aoi import AreaOfInterest
-from pyproj.database import query_utm_crs_info  # pylint: disable=no-name-in-module
+from pyproj.database import (  # type: ignore  # pylint: disable=no-name-in-module
+    query_utm_crs_info,
+)
 
 
 class GARSGridBase:
@@ -98,12 +101,12 @@ class GARSGridBase:
     """
 
     def __init__(self):
-        self._utm_epsg = None
-        self.gars_id = ""
+        self._utm_epsg: Optional[str] = None
+        self.gars_id: str = ""
 
     @property
     @abstractmethod
-    def polygon(self):
+    def polygon(self) -> shapely.geometry.Polygon:
         """
         Returns the polygon boundary for the GARS tile.
 
@@ -115,7 +118,7 @@ class GARSGridBase:
 
     @property
     @abstractmethod
-    def VALID_RESOLUTIONS(self):  # pylint: disable=invalid-name
+    def VALID_RESOLUTIONS(self) -> Tuple[int, ...]:  # pylint: disable=invalid-name
         """
         List of supported resolutions.
 
@@ -126,13 +129,25 @@ class GARSGridBase:
         raise NotImplementedError
 
     @property
-    def utm_epsg(self):
+    @abstractmethod
+    def LETTERS(self) -> str:  # pylint: disable=invalid-name
+        """
+        String of letters for the grid system
+
+        Returns
+        -------
+        str
+        """
+        raise NotImplementedError
+
+    @property
+    def utm_epsg(self) -> str:
         """This returns the UTM zone EPSG code for this GARS grid.
 
         Returns
         -------
-        str: UTM zone EPSG code
-
+        str:
+            UTM zone EPSG code
         """
         if self._utm_epsg is not None:
             return self._utm_epsg
@@ -158,20 +173,20 @@ class GARSGridBase:
             self._utm_epsg = f"EPSG:{utm_crs_list[0].code}"
         return self._utm_epsg
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.gars_id
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return str(self) == str(other)
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.gars_id)
 
-    def __lt__(self, other):
+    def __lt__(self, other) -> bool:
         return self.gars_id < other.gars_id
 
     @classmethod
-    def validate_resolution(cls, resolution):
+    def validate_resolution(cls, resolution: int) -> int:
         """Validate the resolution input.
 
         Returns
@@ -183,7 +198,7 @@ class GARSGridBase:
         ValueError
 
         """
-        if resolution not in cls.VALID_RESOLUTIONS:
+        if resolution not in cls.VALID_RESOLUTIONS:  # type: ignore
             raise ValueError(
                 f"Invalid resolution {resolution}. "
                 f"Only {cls.VALID_RESOLUTIONS} are allowed."
@@ -197,8 +212,8 @@ class GARSGrid(GARSGridBase):
     or the resolution and lat/lon coords.
     """
 
-    LETTERS = "ABCDEFGHJKLMNPQRSTUVWXYZ"
-    VALID_RESOLUTIONS = (1, 5, 15, 30)
+    LETTERS: str = "ABCDEFGHJKLMNPQRSTUVWXYZ"
+    VALID_RESOLUTIONS: Tuple[int, int, int, int] = (1, 5, 15, 30)
     RE_PATTERN = re.compile(
         r"^(?P<quadrant_30min>\d{3}[A-HJ-NP-Q][A-HJ-NP-Z])"
         r"((?P<quadrant_15min>[1-4])"
@@ -206,7 +221,7 @@ class GARSGrid(GARSGridBase):
         r"(?P<quadrant_1min>\d{2})?)?)?$"
     )
 
-    def __init__(self, gars_id, max_resolution=None):
+    def __init__(self, gars_id: str, max_resolution: Optional[int] = None):
         """
         Parameters
         ----------
@@ -269,11 +284,13 @@ class GARSGrid(GARSGridBase):
         # properties
         self._polygon = None
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<GARS(gars_id={self}, resolution={self.resolution})>"
 
     @classmethod
-    def from_latlon(cls, latitude, longitude, resolution):
+    def from_latlon(
+        cls, latitude: float, longitude: float, resolution: int
+    ) -> "GARSGrid":
         # pylint: disable=too-many-locals
         """Load GARS grid from latitude and longitude.
 
@@ -315,7 +332,9 @@ class GARSGrid(GARSGridBase):
         # 15 minute quadrant
         if resolution < 30:
 
-            def index_from_degrees(num_degrees, inverse=False):
+            def index_from_degrees(
+                num_degrees: float, inverse: bool = False
+            ) -> Tuple[int, int, int]:
                 minutes = (num_degrees - math.floor(num_degrees)) * 60
                 minutes_30 = minutes % 30
                 minutes_15 = minutes % 15
@@ -333,24 +352,23 @@ class GARSGrid(GARSGridBase):
             lat_15min_idx, lat_5min_idx, lat_1min_idx = index_from_degrees(
                 latitude, inverse=True
             )
-            quadrant_15min = int((lat_15min_idx - 1) * 2 + lon_15min_idx)
+            quadrant_15min = str(int((lat_15min_idx - 1) * 2 + lon_15min_idx))
 
             # 5 minute quadrant
             if resolution < 15:
-                quadrant_5min = int((lat_5min_idx - 1) * 3 + lon_5min_idx)
+                quadrant_5min = str(int((lat_5min_idx - 1) * 3 + lon_5min_idx))
 
             # 1 minute quadrant
             if resolution < 5:
-                quadrant_1min = int((lat_1min_idx - 1) * 5 + lon_1min_idx)
-                quadrant_1min = f"{quadrant_1min:02d}"
+                quadrant_1min = f"{int((lat_1min_idx - 1) * 5 + lon_1min_idx):02d}"
 
         gars_id = "".join(
-            [quadrant_30min, str(quadrant_15min), str(quadrant_5min), quadrant_1min]
+            [quadrant_30min, quadrant_15min, quadrant_5min, quadrant_1min]
         )
 
         return cls(gars_id, max_resolution=resolution)
 
-    def _15_minute_delta(self):
+    def _15_minute_delta(self) -> Tuple[float, float]:
         """
         Calculate 15 minute delta
 
@@ -373,7 +391,7 @@ class GARSGrid(GARSGridBase):
             lon_minutes = 15.0
         return lon_minutes, lat_minutes
 
-    def _5_minute_delta(self):
+    def _5_minute_delta(self) -> Tuple[float, float]:
         """
         Calculate 5 minute delta
 
@@ -401,7 +419,7 @@ class GARSGrid(GARSGridBase):
             lat_minutes = 10.0
         return lon_minutes, lat_minutes
 
-    def _1_minute_delta(self):
+    def _1_minute_delta(self) -> Tuple[float, float]:
         """
         Calculate 1 minute delta
 
@@ -438,7 +456,7 @@ class GARSGrid(GARSGridBase):
         return lon_minutes, lat_minutes
 
     @property
-    def polygon(self):
+    def polygon(self) -> shapely.geometry.Polygon:
         """Generates the GARS bounding polygon.
 
         Returns

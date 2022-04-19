@@ -44,6 +44,7 @@ The fifth character is the keypad key number. (ex. GD6A3)
 """
 import math
 import re
+from typing import Optional, Tuple
 
 import shapely.geometry
 
@@ -59,12 +60,12 @@ class GEDGARSGrid(GARSGridBase):
     """
 
     LETTERS = "ABC"
-    VALID_RESOLUTIONS = (30, 60)
+    VALID_RESOLUTIONS: Tuple[int, int] = (30, 60)
     RE_PATTERN = re.compile(
         r"^GD(?P<quadrant_60deg>\d{1}[A-C])" r"(?P<quadrant_30deg>[1-4])?$"
     )
 
-    def __init__(self, gars_id, max_resolution=None):
+    def __init__(self, gars_id: str, max_resolution: Optional[int] = None):
         """
         Parameters
         ----------
@@ -89,12 +90,12 @@ class GEDGARSGrid(GARSGridBase):
         gars_match = self.RE_PATTERN.match(gars_id)
         if not gars_match:
             raise ValueError(f'"{gars_id}" is not a valid ED-GARS grid ID.')
-        self.gars_id = gars_id
+        self.gars_id: str = gars_id
 
         gars_dict = gars_match.groupdict()
 
-        self.quadrant_60deg = gars_dict["quadrant_60deg"]
-        self.quadrant_30deg = gars_dict["quadrant_30deg"]
+        self.quadrant_60deg: str = gars_dict["quadrant_60deg"]
+        self.quadrant_30deg: str = gars_dict["quadrant_30deg"]
 
         lon_num = int(self.quadrant_60deg[0])
         if (lon_num < 1) or (lon_num > 6):
@@ -104,25 +105,27 @@ class GEDGARSGrid(GARSGridBase):
             )
 
         # determine resolution from ED-GARS ID
-        self.resolution = 60
+        self.resolution: int = 60
         if self.quadrant_30deg:
             self.resolution = 30
 
         # properties
-        self._polygon = None
+        self._polygon: Optional[shapely.geometry.Polygon] = None
 
     def __repr__(self):
         return f"<GED-GARS(gars_id={self}, resolution={self.resolution})>"
 
     @property
-    def utm_epsg(self):
+    def utm_epsg(self) -> None:  # type: ignore
         """
         Not valid since it spans UTM Zones
         """
         return None
 
     @classmethod
-    def from_latlon(cls, latitude, longitude, resolution):
+    def from_latlon(
+        cls, latitude: float, longitude: float, resolution: int
+    ) -> "GEDGARSGrid":
         """Load ED-GARS grid from latitude and longitude.
 
         Parameters
@@ -157,14 +160,14 @@ class GEDGARSGrid(GARSGridBase):
         if resolution < 60:
             lon_30deg_idx = math.floor((longitude % 60) / 30.0) + 1
             lat_30deg_idx = 2 - math.floor((latitude % 60) / 30.0)
-            quadrant_30deg = int((lat_30deg_idx - 1) * 2 + lon_30deg_idx)
+            quadrant_30deg = str(int((lat_30deg_idx - 1) * 2 + lon_30deg_idx))
 
-        gars_id = "".join(["GD", quadrant_60deg, str(quadrant_30deg)])
+        gars_id = "".join(["GD", quadrant_60deg, quadrant_30deg])
 
         return cls(gars_id, max_resolution=resolution)
 
     @property
-    def polygon(self):
+    def polygon(self) -> shapely.geometry.Polygon:
         """Generates the GARS bounding polygon.
 
         Returns
@@ -177,11 +180,11 @@ class GEDGARSGrid(GARSGridBase):
 
         # CALCULATE 60 DEG DEGREES
         # get 60 DEG quadrant info
-        longitude = ((int(self.quadrant_60deg[0]) - 1) * 60) - 180
+        longitude: float = ((int(self.quadrant_60deg[0]) - 1) * 60) - 180
 
         # 60 deg north/south letter, A-C
         lat_60deg_letter = self.quadrant_60deg[1]
-        latitude = -90.0 + (self.LETTERS.index(lat_60deg_letter) * 60.0)
+        latitude: float = -90.0 + (self.LETTERS.index(lat_60deg_letter) * 60.0)
 
         # CALCULATE 30 DEG DELTA
         try:
