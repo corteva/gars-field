@@ -62,7 +62,7 @@ class GEDGARSGrid(GARSGridBase):
     LETTERS = "ABC"
     VALID_RESOLUTIONS: Tuple[int, int] = (30, 60)
     RE_PATTERN = re.compile(
-        r"^GD(?P<quadrant_60deg>\d{1}[A-C])" r"(?P<quadrant_30deg>[1-4])?$"
+        r"^GD(?P<quadrant_60deg>\d{1}[A-C])(?P<quadrant_30deg>[1-4])?$"
     )
 
     def __init__(self, gars_id: str, max_resolution: Optional[int] = None):
