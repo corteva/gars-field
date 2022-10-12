@@ -301,12 +301,12 @@ class GARSGrid(GARSGridBase):
         longitude: float
             The longitude of the cell you want to find.
         resolution: int
-            The grid resolution in seconds (5, 15, 30).
+            The grid resolution in minutes (5, 15, 30).
 
 
         Returns
         -------
-        :obj:`GARSGrid`
+        GARSGrid
 
         """
         resolution = cls.validate_resolution(resolution)
