@@ -1,7 +1,7 @@
 """
 GARS Field is a toolkit for generating Global Area Reference grids
 """
-__version__ = "0.3.3"
+__version__ = "0.3.4.dev0"
 
 from .edgarsgrid import EDGARSGrid  # noqa: F401
 from .field import GARSField  # noqa: F401
