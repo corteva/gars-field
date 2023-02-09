@@ -115,7 +115,7 @@ class GARSField:
             return self._gars_60deg
 
         # handle multi geometry
-        if self.bounding_geom.type.startswith("Multi"):
+        if self.bounding_geom.geom_type.startswith("Multi"):
             self._gars_60deg = []
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_60deg += GARSField(bounding_geom).gars_60deg
@@ -141,7 +141,7 @@ class GARSField:
             return self._gars_30deg
 
         # handle multi geometry
-        if self.bounding_geom.type.startswith("Multi"):
+        if self.bounding_geom.geom_type.startswith("Multi"):
             self._gars_30deg = []
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_30deg += GARSField(bounding_geom).gars_30deg
@@ -186,7 +186,7 @@ class GARSField:
             return self._gars_6deg
 
         # handle multi geometry
-        if self.bounding_geom.type.startswith("Multi"):
+        if self.bounding_geom.geom_type.startswith("Multi"):
             self._gars_6deg = []
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_6deg += GARSField(bounding_geom).gars_6deg
@@ -215,7 +215,7 @@ class GARSField:
             return self._gars_3deg
 
         # handle multi geometry
-        if self.bounding_geom.type.startswith("Multi"):
+        if self.bounding_geom.geom_type.startswith("Multi"):
             self._gars_3deg = []
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_3deg += GARSField(bounding_geom).gars_3deg
@@ -238,7 +238,7 @@ class GARSField:
             return self._gars_1deg
 
         # handle multi geometry
-        if self.bounding_geom.type.startswith("Multi"):
+        if self.bounding_geom.geom_type.startswith("Multi"):
             self._gars_1deg = []
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_1deg += GARSField(bounding_geom).gars_1deg
@@ -281,7 +281,7 @@ class GARSField:
             return self._gars_30min
 
         # handle multi geometry
-        if self.bounding_geom.type.startswith("Multi"):
+        if self.bounding_geom.geom_type.startswith("Multi"):
             self._gars_30min = []
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_30min += GARSField(bounding_geom).gars_30min
@@ -310,7 +310,7 @@ class GARSField:
             return self._gars_15min
 
         # handle multi geometry
-        if self.bounding_geom.type.startswith("Multi"):
+        if self.bounding_geom.geom_type.startswith("Multi"):
             self._gars_15min = []
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_15min += GARSField(bounding_geom).gars_15min
@@ -335,7 +335,7 @@ class GARSField:
             return self._gars_5min
 
         # handle multi geometry
-        if self.bounding_geom.type.startswith("Multi"):
+        if self.bounding_geom.geom_type.startswith("Multi"):
             self._gars_5min = []
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_5min += GARSField(bounding_geom).gars_5min
@@ -360,7 +360,7 @@ class GARSField:
             return self._gars_1min
 
         # handle multi geometry
-        if self.bounding_geom.type.startswith("Multi"):
+        if self.bounding_geom.geom_type.startswith("Multi"):
             self._gars_1min = []
             for bounding_geom in self.bounding_geom.geoms:
                 self._gars_1min += GARSField(bounding_geom).gars_1min
