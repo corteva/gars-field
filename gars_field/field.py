@@ -54,12 +54,8 @@ class GARSField:
             min_lon, min_lat, max_lon, max_lat
         """
         min_lon, min_lat, max_lon, max_lat = self.bounding_geom.bounds
-
-        if min_lon < -180:
-            min_lon = -180
-        if max_lon >= 180:
-            max_lon = 179.999999999999
-
+        min_lon = max(min_lon, -180)
+        max_lon = min(max_lon, 179.999999999999)
         return min_lon, min_lat, max_lon, max_lat
 
     @staticmethod
