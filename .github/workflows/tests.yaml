@@ -54,6 +54,11 @@ jobs:
         run: |
           pylint gars_field
 
+      - name: mypy
+        shell: bash
+        run: |
+          python -m mypy gars_field
+
       - name: Test
         shell: bash
         run: |
