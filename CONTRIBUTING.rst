@@ -69,7 +69,7 @@ Ready to contribute? Here's how to set up `gars_field` for local development.
     $ cd gars_field/
     $ python3 -m venv venv
     $ source venv/bin/activate
-    $ python -m pip install -e .[all]
+    $ python -m pip install -e . --group dev
 
 4. Install pre-commit::
 

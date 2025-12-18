@@ -1,0 +1,79 @@
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = ["setuptools", "wheel"]
+
+[project]
+name = "gars_field"
+dynamic = ["version"]
+description = "Toolkit to generate Global Area Reference System grids."
+maintainers = [
+    {name = "gars_field Contributors"},
+]
+keywords = [
+    "GARS",
+    "grid",
+]
+readme = "README.rst"
+license = {text = "BSD-3-Clause"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Natural Language :: English",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: GIS",
+    "Typing :: Typed",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "shapely",
+    "pyproj>=3"
+]
+
+[project.optional-dependencies]
+keyring = ["keyring"]
+
+[tool.setuptools.dynamic]
+version = {attr = "gars_field.__version__"}
+
+[dependency-groups]
+test = [
+    "pytest-cov",
+]
+type = [
+    "mypy",
+    "types-requests",
+]
+lint = [
+    "pylint"
+]
+dev = [
+    "pre-commit",
+    {include-group = "test"},
+    {include-group = "type"},
+    {include-group = "lint"}
+]
+
+[project.urls]
+repository = "https://github.com/corteva/gars-field"
+
+
+[tool.setuptools.packages.find]
+include = ["gars_field", "gars_field.*"]
+
+[options.package_data]
+gars_field = [
+  "py.typed",
+]
+
+[tool.black]
+target_version = ["py310"]
